@@ -30,9 +30,24 @@ namespace Sync
             request.AddQueryParameter("Take", take);
 
             var body = new ContactQueryRequest();
+
+            //Setup to only retrieve AZ contacts
+            //Found available paramter and operator by calling api/Contact/QueryOptions
+            var condition = new Condition
+            {
+                Parameter = "State",
+                Operator = "Is",
+                Value = "AZ"
+            };
+
+            var queryConditions = new QueryConditions();
+            queryConditions.Conditions.Add(condition);
+
+            body.Groups.Add(queryConditions);
+
             request.AddJsonBody(body);
 
-            var response = await _restClient.GetAsync<PagedResult<AbbreviatedContact>>(request);
+            var response = await _restClient.PostAsync<PagedResult<AbbreviatedContact>>(request);
             return response;
         }
     }
